@@ -4,7 +4,18 @@
   "description": "Karigar.pk backend API server",
   "private": true,
   "type": "module",
+  "main": "server.js",
   "scripts": {
-    "dev": "echo \"Server setup coming in Phase 2\""
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

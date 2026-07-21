@@ -11,8 +11,8 @@ Service providers create verified profiles with skills, experience, service area
 | Layer      | Technology                              |
 |------------|-----------------------------------------|
 | Frontend   | React (Vite), React Router, Axios, Tailwind CSS v4 |
-| Backend    | Node.js, Express.js *(Phase 2)*         |
-| Database   | MongoDB Atlas with Mongoose *(Phase 2)* |
+| Backend    | Node.js, Express.js, CORS                |
+| Database   | MongoDB Atlas with Mongoose               |
 | Auth       | JWT + bcrypt *(Phase 3–4)*              |
 | Deployment | Frontend on Vercel, Backend on Render *(Phase 5)* |
 
@@ -27,6 +27,14 @@ Service providers create verified profiles with skills, experience, service area
 - Warm neutral theme with brown accent (`#8B5E34`) applied globally via Tailwind `@theme`
 - **Navbar** — responsive with mobile hamburger menu, Karigar.pk branding, Login/Sign Up buttons (static)
 - **Home page** — hero section, "How It Works" (3-step cards), popular categories grid (6 services), CTA banner, footer
+
+### Phase 2 ✅ — Backend Setup & Database Connection
+
+- Express.js server with CORS and JSON body parsing
+- MongoDB Atlas connection via Mongoose (environment variable based)
+- Server folder structure: `config/`, `models/`, `routes/`, `controllers/`, `middleware/`
+- Health-check API route: `GET /api/health` — returns server status, uptime, and database connection state
+- Nodemon for auto-reloading during development
 
 ---
 
@@ -48,10 +56,33 @@ npm run dev
 The app will be available at `http://localhost:5173/`.
 
 ### Run Backend Locally
-*(Coming in Phase 2)*
+
+```bash
+# From the project root
+cd server
+npm install
+
+# Copy .env.example to .env and fill in your MongoDB Atlas URI
+cp .env.example .env
+
+npm run dev
+```
+
+The API will be available at `http://localhost:5000/`.
+Health check: `http://localhost:5000/api/health`
 
 ---
 
 ## Environment Variables
 
-*(No environment variables required yet — will be added in Phase 2+)*
+### Server (`/server/.env`)
+| Variable     | Description                          |
+|-------------|--------------------------------------|
+| `PORT`       | Server port (default: 5000)          |
+| `MONGO_URI`  | MongoDB Atlas connection string      |
+| `CLIENT_URL` | Frontend URL for CORS (default: http://localhost:5173) |
+
+### Client (`/client/.env`)
+| Variable       | Description                     |
+|---------------|---------------------------------|
+| `VITE_API_URL` | Backend API base URL            |
