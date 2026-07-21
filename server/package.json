@@ -1,0 +1,10 @@
+{
+  "name": "karigar-server",
+  "version": "1.0.0",
+  "description": "Karigar.pk backend API server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"Server setup coming in Phase 2\""
+  }
+}
