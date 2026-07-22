@@ -13,7 +13,7 @@ Service providers create verified profiles with skills, experience, service area
 | Frontend   | React (Vite), React Router, Axios, Tailwind CSS v4 |
 | Backend    | Node.js, Express.js, CORS                |
 | Database   | MongoDB Atlas with Mongoose               |
-| Auth       | JWT + bcrypt *(Phase 3–4)*              |
+| Auth       | JWT (jsonwebtoken) + bcryptjs            |
 | Deployment | Frontend on Vercel, Backend on Render *(Phase 5)* |
 
 ---
@@ -35,6 +35,14 @@ Service providers create verified profiles with skills, experience, service area
 - Server folder structure: `config/`, `models/`, `routes/`, `controllers/`, `middleware/`
 - Health-check API route: `GET /api/health` — returns server status, uptime, and database connection state
 - Nodemon for auto-reloading during development
+
+### Phase 3 ✅ — Users Model & Auth API
+
+- **User model**: name, email, password (hashed with bcrypt), phone, role (`customer` | `worker`), timestamps
+- **Signup endpoint**: `POST /api/auth/signup` — validates input, checks duplicate email, hashes password, returns JWT
+- **Login endpoint**: `POST /api/auth/login` — validates credentials, returns JWT
+- **Get profile endpoint**: `GET /api/auth/me` — protected route, returns current user data
+- **JWT middleware**: extracts Bearer token, verifies, and attaches user to request
 
 ---
 
@@ -80,6 +88,7 @@ Health check: `http://localhost:5000/api/health`
 |-------------|--------------------------------------|
 | `PORT`       | Server port (default: 5000)          |
 | `MONGO_URI`  | MongoDB Atlas connection string      |
+| `JWT_SECRET` | Secret key for signing JWT tokens    |
 | `CLIENT_URL` | Frontend URL for CORS (default: http://localhost:5173) |
 
 ### Client (`/client/.env`)
