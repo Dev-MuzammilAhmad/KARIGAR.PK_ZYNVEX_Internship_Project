@@ -1,11 +1,20 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { user, isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const handleLogout = () => {
+    logout()
+    setIsMobileMenuOpen(false)
+    navigate('/')
   }
 
   return (
@@ -33,20 +42,43 @@ const Navbar = () => {
               Home
             </Link>
 
-            <div className="flex items-center gap-3">
-              <Link
-                to="/login"
-                className="px-4 py-2 text-sm font-medium text-primary border border-primary/30 bg-primary-light/50 rounded-lg hover:bg-primary-light hover:border-primary/50 transition-all"
-              >
-                Log In
-              </Link>
-              <Link
-                to="/signup"
-                className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover shadow-sm hover:shadow transition-all"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                {/* User info */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-primary">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-text-primary max-w-[120px] truncate">
+                    {user?.name}
+                  </span>
+                </div>
+                {/* Logout button */}
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-sm font-medium text-text-secondary border border-border rounded-lg hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-medium text-primary border border-primary/30 bg-primary-light/50 rounded-lg hover:bg-primary-light hover:border-primary/50 transition-all"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover shadow-sm hover:shadow transition-all"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,7 +104,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+          isMobileMenuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="px-4 pb-4 pt-2 space-y-2 border-t border-border">
@@ -83,22 +115,46 @@ const Navbar = () => {
           >
             Home
           </Link>
-          <div className="flex flex-col gap-2 pt-2">
-            <Link
-              to="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2.5 text-sm font-medium text-primary text-center border border-primary/30 bg-primary-light/50 rounded-lg hover:bg-primary-light transition-all"
-            >
-              Log In
-            </Link>
-            <Link
-              to="/signup"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2.5 text-sm font-medium text-white text-center bg-primary rounded-lg hover:bg-primary-hover shadow-sm transition-all"
-            >
-              Sign Up
-            </Link>
-          </div>
+
+          {isAuthenticated ? (
+            <>
+              {/* User info mobile */}
+              <div className="flex items-center gap-3 px-3 py-2.5">
+                <div className="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center">
+                  <span className="text-sm font-semibold text-primary">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-text-primary">{user?.name}</p>
+                  <p className="text-xs text-text-secondary">{user?.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-2.5 text-sm font-medium text-red-600 text-center border border-red-200 bg-red-50 rounded-lg hover:bg-red-100 transition-all"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <div className="flex flex-col gap-2 pt-2">
+              <Link
+                to="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-4 py-2.5 text-sm font-medium text-primary text-center border border-primary/30 bg-primary-light/50 rounded-lg hover:bg-primary-light transition-all"
+              >
+                Log In
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-4 py-2.5 text-sm font-medium text-white text-center bg-primary rounded-lg hover:bg-primary-hover shadow-sm transition-all"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>

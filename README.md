@@ -44,6 +44,15 @@ Service providers create verified profiles with skills, experience, service area
 - **Get profile endpoint**: `GET /api/auth/me` — protected route, returns current user data
 - **JWT middleware**: extracts Bearer token, verifies, and attaches user to request
 
+### Phase 4 ✅ — Frontend Auth Integration
+
+- **Login page** (`/login`) — email/password form with client-side validation, error display, loading state
+- **Signup page** (`/signup`) — name, email, password, confirm password, phone (optional), role selector (customer/worker)
+- **AuthContext** — React context providing `user`, `login()`, `signup()`, `logout()`, `isAuthenticated` across the app
+- **Axios instance** — centralized API client with automatic JWT token injection via interceptor
+- **Navbar updated** — shows user's name initial + Logout when logged in; Login/Sign Up when logged out
+- **Form validation** — required fields, valid email, password length (6+), password match — on both frontend and backend
+
 ---
 
 ## Setup / Installation
