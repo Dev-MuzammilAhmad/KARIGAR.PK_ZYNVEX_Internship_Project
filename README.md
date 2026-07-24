@@ -14,7 +14,7 @@ Service providers create verified profiles with skills, experience, service area
 | Backend    | Node.js, Express.js, CORS                |
 | Database   | MongoDB Atlas with Mongoose               |
 | Auth       | JWT (jsonwebtoken) + bcryptjs            |
-| Deployment | Frontend on Vercel, Backend on Render *(Phase 5)* |
+| Deployment | Frontend on Vercel, Backend on Render    |
 
 ---
 
@@ -52,6 +52,14 @@ Service providers create verified profiles with skills, experience, service area
 - **Axios instance** — centralized API client with automatic JWT token injection via interceptor
 - **Navbar updated** — shows user's name initial + Logout when logged in; Login/Sign Up when logged out
 - **Form validation** — required fields, valid email, password length (6+), password match — on both frontend and backend
+
+### Phase 5 ✅ — Environment Variables & Deployment
+
+- `.env` files for both client and server with `.env.example` templates
+- All secrets (MongoDB URI, JWT secret) excluded from version control via `.gitignore`
+- **Vercel config** (`vercel.json`) — SPA rewrites for React Router
+- **Render config** (`render.yaml`) — deployment blueprint with env var placeholders
+- Deployment-ready: frontend on Vercel, backend on Render
 
 ---
 
@@ -104,3 +112,29 @@ Health check: `http://localhost:5000/api/health`
 | Variable       | Description                     |
 |---------------|---------------------------------|
 | `VITE_API_URL` | Backend API base URL            |
+
+---
+
+## Deployment
+
+### Frontend → Vercel
+
+1. Go to [vercel.com](https://vercel.com) → **New Project**
+2. Import your GitHub repo
+3. Set **Root Directory** to `client`
+4. Set **Framework Preset** to `Vite`
+5. Add environment variable: `VITE_API_URL` = `https://your-render-backend-url.onrender.com/api`
+6. Deploy
+
+### Backend → Render
+
+1. Go to [render.com](https://render.com) → **New Web Service**
+2. Connect your GitHub repo
+3. Set **Root Directory** to `server`
+4. Set **Build Command** to `npm install`
+5. Set **Start Command** to `node server.js`
+6. Add environment variables:
+   - `MONGO_URI` = your MongoDB Atlas connection string
+   - `JWT_SECRET` = your secret key
+   - `CLIENT_URL` = your Vercel frontend URL
+7. Deploy
