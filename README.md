@@ -63,6 +63,16 @@ Service providers create verified profiles with skills, experience, service area
 
 ---
 
+## Module 2 — Worker Profiles (CRUD)
+
+### Phase 1 ✅ — WorkerProfile Model & Backend Routes Skeleton
+
+- **WorkerProfile model**: userId (ref User), skills [String], category (enum), experienceYears, serviceArea, city, pricing {min, max}, bio, profileImage, verified (default false), avgRating (default 0), timestamps
+- **Worker controller**: placeholder handlers for Create, Read (all + single + own), Update, Delete — all returning 501
+- **Worker routes**: wired into Express app under `/api/workers` with public GETs and protected POST/PUT/DELETE
+
+---
+
 ## Setup / Installation
 
 ### Prerequisites
