@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import connectDB from './config/db.js'
 import healthRoutes from './routes/healthRoutes.js'
 import authRoutes from './routes/authRoutes.js'
+import workerRoutes from './routes/workerRoutes.js'
 
 // Load environment variables
 dotenv.config()
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }))
 // Routes
 app.use('/api', healthRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/workers', workerRoutes)
 
 // Root route
 app.get('/', (req, res) => {
