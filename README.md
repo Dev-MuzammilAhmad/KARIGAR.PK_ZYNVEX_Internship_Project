@@ -71,6 +71,14 @@ Service providers create verified profiles with skills, experience, service area
 - **Worker controller**: placeholder handlers for Create, Read (all + single + own), Update, Delete — all returning 501
 - **Worker routes**: wired into Express app under `/api/workers` with public GETs and protected POST/PUT/DELETE
 
+### Phase 2 ✅ — Create & Read Worker Profile (API)
+
+- **POST `/api/workers`** — protected, worker-role only; validates all fields, checks for duplicate profile, returns created profile with populated user info
+- **GET `/api/workers`** — public; returns all worker profiles sorted by newest, with user info populated
+- **GET `/api/workers/:id`** — public; returns a single worker profile with graceful handling for invalid/missing IDs
+- **GET `/api/workers/me`** — protected; returns the logged-in worker's own profile
+- Backend validation: required fields, valid pricing range (max ≥ min), non-negative values, category enum check
+
 ---
 
 ## Setup / Installation
