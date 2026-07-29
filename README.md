@@ -79,6 +79,14 @@ Service providers create verified profiles with skills, experience, service area
 - **GET `/api/workers/me`** — protected; returns the logged-in worker's own profile
 - Backend validation: required fields, valid pricing range (max ≥ min), non-negative values, category enum check
 
+### Phase 3 ✅ — Update, Delete & Image Upload (API)
+
+- **PUT `/api/workers/:id`** — protected, owner only; partial updates for all profile fields, with image replacement and old file cleanup
+- **DELETE `/api/workers/:id`** — protected, owner only; deletes profile and associated image file from disk
+- **Image upload** via Multer: accepts JPEG/PNG/WebP up to 5MB, stored in `/uploads` with unique filenames
+- Static file serving: uploaded images accessible at `/uploads/filename.ext`
+- Ownership validation on both Update and Delete to prevent unauthorized modifications
+
 ---
 
 ## Setup / Installation

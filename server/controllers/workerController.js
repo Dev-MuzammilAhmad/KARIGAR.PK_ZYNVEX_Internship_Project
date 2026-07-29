@@ -93,7 +93,7 @@ export const createWorkerProfile = async (req, res) => {
       city,
       pricing,
       bio: bio || '',
-      profileImage: profileImage || '',
+      profileImage: req.file ? `/uploads/${req.file.filename}` : (profileImage || ''),
     })
 
     // Populate user info in the response
@@ -208,14 +208,153 @@ export const getMyProfile = async (req, res) => {
 // @route   PUT /api/workers/:id
 // @access  Private (owner only)
 export const updateWorkerProfile = async (req, res) => {
-  // TODO: Implement in Phase 3
-  res.status(501).json({ success: false, message: 'Not implemented yet' })
+  try {
+    const worker = await WorkerProfile.findById(req.params.id)
+
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker profile not found',
+      })
+    }
+
+    // Only the profile owner can update
+    if (worker.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to update this profile',
+      })
+    }
+
+    // Fields that can be updated
+    const allowedUpdates = [
+      'skills',
+      'category',
+      'experienceYears',
+      'serviceArea',
+      'city',
+      'pricing',
+      'bio',
+    ]
+
+    // Apply updates from request body
+    allowedUpdates.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        worker[field] = req.body[field]
+      }
+    })
+
+    // Handle profile image upload via Multer
+    if (req.file) {
+      // Delete old image file if it exists
+      if (worker.profileImage) {
+        const oldImagePath = worker.profileImage.replace(/^\//, '')
+        try {
+          const fs = await import('fs')
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath)
+          }
+        } catch {
+          // Ignore file deletion errors
+        }
+      }
+      worker.profileImage = `/uploads/${req.file.filename}`
+    }
+
+    // Validate pricing if being updated
+    if (req.body.pricing) {
+      const { min, max } = req.body.pricing
+      if (min !== undefined && max !== undefined && max < min) {
+        return res.status(400).json({
+          success: false,
+          message: 'Maximum price must be greater than or equal to minimum price',
+        })
+      }
+    }
+
+    const updatedWorker = await worker.save()
+    await updatedWorker.populate('userId', 'name email phone')
+
+    res.json({
+      success: true,
+      message: 'Worker profile updated successfully',
+      data: updatedWorker,
+    })
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map((err) => err.message)
+      return res.status(400).json({
+        success: false,
+        message: messages[0],
+      })
+    }
+
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker profile not found',
+      })
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again later.',
+    })
+  }
 }
 
 // @desc    Delete a worker profile
 // @route   DELETE /api/workers/:id
 // @access  Private (owner only)
 export const deleteWorkerProfile = async (req, res) => {
-  // TODO: Implement in Phase 3
-  res.status(501).json({ success: false, message: 'Not implemented yet' })
+  try {
+    const worker = await WorkerProfile.findById(req.params.id)
+
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker profile not found',
+      })
+    }
+
+    // Only the profile owner can delete
+    if (worker.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to delete this profile',
+      })
+    }
+
+    // Delete profile image file if it exists
+    if (worker.profileImage) {
+      const imagePath = worker.profileImage.replace(/^\//, '')
+      try {
+        const fs = await import('fs')
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath)
+        }
+      } catch {
+        // Ignore file deletion errors
+      }
+    }
+
+    await WorkerProfile.findByIdAndDelete(req.params.id)
+
+    res.json({
+      success: true,
+      message: 'Worker profile deleted successfully',
+    })
+  } catch (error) {
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker profile not found',
+      })
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again later.',
+    })
+  }
 }
