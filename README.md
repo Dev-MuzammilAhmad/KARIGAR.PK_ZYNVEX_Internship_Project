@@ -87,6 +87,14 @@ Service providers create verified profiles with skills, experience, service area
 - Static file serving: uploaded images accessible at `/uploads/filename.ext`
 - Ownership validation on both Update and Delete to prevent unauthorized modifications
 
+### Phase 4 ✅ — Worker Dashboard (Frontend)
+
+- **Worker Dashboard** (`/dashboard`) — shows worker's own profile card with image, details grid, skills tags; Edit and Delete buttons with confirmation modal; create-profile prompt if no profile exists
+- **Create/Edit Profile form** (`/dashboard/create-profile`, `/dashboard/edit-profile`) — unified form with image upload + preview, category dropdown, comma-separated skills, pricing range, bio with char counter, client-side validation
+- **ProtectedRoute component** — role-based access control; redirects to login or home for unauthorized users
+- **Navbar updated** — "Dashboard" link visible for workers on desktop and mobile
+- All forms connected to backend via Axios with `multipart/form-data` for image uploads
+
 ---
 
 ## Setup / Installation

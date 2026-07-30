@@ -44,6 +44,15 @@ const Navbar = () => {
 
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
+                {/* Dashboard link for workers */}
+                {user?.role === 'worker' && (
+                  <Link
+                    to="/dashboard"
+                    className="text-text-secondary hover:text-primary font-medium text-sm transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 {/* User info */}
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center">
@@ -118,6 +127,16 @@ const Navbar = () => {
 
           {isAuthenticated ? (
             <>
+              {/* Dashboard link for workers (mobile) */}
+              {user?.role === 'worker' && (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-3 py-2.5 text-text-secondary hover:text-primary hover:bg-primary-light/50 rounded-lg font-medium text-sm transition-colors"
+                >
+                  Dashboard
+                </Link>
+              )}
               {/* User info mobile */}
               <div className="flex items-center gap-3 px-3 py-2.5">
                 <div className="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center">
