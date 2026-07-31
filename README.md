@@ -95,6 +95,14 @@ Service providers create verified profiles with skills, experience, service area
 - **Navbar updated** — "Dashboard" link visible for workers on desktop and mobile
 - All forms connected to backend via Axios with `multipart/form-data` for image uploads
 
+### Phase 5 ✅ — Public Worker Profile Page (Frontend)
+
+- **Public profile page** (`/workers/:id`) — no login required; displays profile image with gradient hero, name, category badge, verified status, bio, skills tags
+- **Details cards**: service area, pricing range, and experience in a responsive grid
+- **Contact section**: WhatsApp, phone call, and email buttons using the worker's registered contact info
+- Graceful handling of loading and "profile not found" states with friendly UI
+- Fully responsive on mobile, styled consistently with the warm neutral theme
+
 ---
 
 ## Setup / Installation

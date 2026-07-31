@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import WorkerDashboard from './pages/WorkerDashboard'
 import WorkerProfileForm from './pages/WorkerProfileForm'
+import WorkerProfile from './pages/WorkerProfile'
 
 // Protected route wrapper — redirects to login if not authenticated
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -45,6 +46,9 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+
+          {/* Public worker profile */}
+          <Route path="/workers/:id" element={<WorkerProfile />} />
 
           {/* Worker-only protected routes */}
           <Route
