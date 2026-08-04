@@ -105,6 +105,18 @@ Service providers create verified profiles with skills, experience, service area
 
 ---
 
+## Module 3 — Search, Filter & Customer Side
+
+### Phase 1 ✅ — Search & Filter API
+
+- Extended `GET /api/workers` with query parameters: `category`, `city`, `keyword`, `minRating`, `minPrice`, `maxPrice`
+- **Keyword search**: matches against skills, category, service area, and bio using case-insensitive regex
+- **Category filter**: exact match from enum; **City filter**: case-insensitive partial match
+- **Price range**: filters by `pricing.min` ≥ minPrice and `pricing.max` ≤ maxPrice
+- **Pagination**: `page` and `limit` query params (default 12 per page, max 50); response includes `total`, `page`, `totalPages`
+
+---
+
 ## Setup / Installation
 
 ### Prerequisites

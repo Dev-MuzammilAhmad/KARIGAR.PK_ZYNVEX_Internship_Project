@@ -120,18 +120,82 @@ export const createWorkerProfile = async (req, res) => {
   }
 }
 
-// @desc    Get all worker profiles
-// @route   GET /api/workers
+// @desc    Get all worker profiles (with search, filter & pagination)
+// @route   GET /api/workers?category=&city=&keyword=&minRating=&minPrice=&maxPrice=&page=&limit=
 // @access  Public
 export const getAllWorkers = async (req, res) => {
   try {
-    const workers = await WorkerProfile.find()
-      .populate('userId', 'name email phone')
-      .sort({ createdAt: -1 })
+    const {
+      category,
+      city,
+      keyword,
+      minRating,
+      minPrice,
+      maxPrice,
+      page = 1,
+      limit = 12,
+    } = req.query
+
+    // Build filter object
+    const filter = {}
+
+    // Category filter (exact match from enum)
+    if (category) {
+      filter.category = category.toLowerCase()
+    }
+
+    // City filter (case-insensitive partial match)
+    if (city) {
+      filter.city = { $regex: city, $options: 'i' }
+    }
+
+    // Keyword search — matches against skills, category, serviceArea, or bio
+    if (keyword) {
+      const keywordRegex = { $regex: keyword, $options: 'i' }
+      filter.$or = [
+        { skills: { $elemMatch: keywordRegex } },
+        { category: keywordRegex },
+        { serviceArea: keywordRegex },
+        { bio: keywordRegex },
+      ]
+    }
+
+    // Minimum rating filter
+    if (minRating) {
+      filter.avgRating = { $gte: Number(minRating) }
+    }
+
+    // Price range filters
+    if (minPrice) {
+      filter['pricing.min'] = { $gte: Number(minPrice) }
+    }
+    if (maxPrice) {
+      filter['pricing.max'] = { $lte: Number(maxPrice) }
+    }
+
+    // Pagination
+    const pageNum = Math.max(1, parseInt(page, 10) || 1)
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 12))
+    const skip = (pageNum - 1) * limitNum
+
+    // Execute query with filters and pagination
+    const [workers, total] = await Promise.all([
+      WorkerProfile.find(filter)
+        .populate('userId', 'name email phone')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum),
+      WorkerProfile.countDocuments(filter),
+    ])
+
+    const totalPages = Math.ceil(total / limitNum)
 
     res.json({
       success: true,
       count: workers.length,
+      total,
+      page: pageNum,
+      totalPages,
       data: workers,
     })
   } catch (error) {
