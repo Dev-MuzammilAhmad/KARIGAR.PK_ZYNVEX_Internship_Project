@@ -41,6 +41,12 @@ const Navbar = () => {
             >
               Home
             </Link>
+            <Link
+              to="/workers"
+              className="text-text-secondary hover:text-primary font-medium text-sm transition-colors"
+            >
+              Find Workers
+            </Link>
 
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
@@ -123,6 +129,13 @@ const Navbar = () => {
             className="block px-3 py-2.5 text-text-secondary hover:text-primary hover:bg-primary-light/50 rounded-lg font-medium text-sm transition-colors"
           >
             Home
+          </Link>
+          <Link
+            to="/workers"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2.5 text-text-secondary hover:text-primary hover:bg-primary-light/50 rounded-lg font-medium text-sm transition-colors"
+          >
+            Find Workers
           </Link>
 
           {isAuthenticated ? (

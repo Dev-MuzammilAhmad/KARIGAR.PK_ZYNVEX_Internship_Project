@@ -115,6 +115,16 @@ Service providers create verified profiles with skills, experience, service area
 - **Price range**: filters by `pricing.min` ≥ minPrice and `pricing.max` ≤ maxPrice
 - **Pagination**: `page` and `limit` query params (default 12 per page, max 50); response includes `total`, `page`, `totalPages`
 
+### Phase 2 ✅ — Search & Filter UI + Worker Listing (Frontend)
+
+- **SearchBar component** — keyword search with clear button, triggers API search
+- **FilterPanel component** — category dropdown, city input, price range (min/max), minimum rating selector; collapsible on mobile with "Reset All" option
+- **Workers listing page** (`/workers`) — responsive card grid showing profile image, name, category, location, pricing, rating, and skills; clickable cards link to public profile
+- **Pagination controls** — Previous/Next + numbered page buttons with ellipsis; filters preserved across pages
+- **Results count** display and empty/loading states with "Clear All Filters" option
+- **URL sync** — active filters and page number synced to URL search params
+- **Navbar updated** — "Find Workers" link added for desktop and mobile
+
 ---
 
 ## Setup / Installation
