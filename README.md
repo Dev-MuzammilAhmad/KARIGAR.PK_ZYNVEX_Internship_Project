@@ -125,6 +125,14 @@ Service providers create verified profiles with skills, experience, service area
 - **URL sync** — active filters and page number synced to URL search params
 - **Navbar updated** — "Find Workers" link added for desktop and mobile
 
+### Phase 3 ✅ — Worker Listing / Results Page
+
+- **Worker cards** — responsive grid (1/2/3 columns) showing profile image, name, category, city/service area, price range, average rating, and top 3 skills with overflow count
+- **Empty state** — friendly "No workers found" message with a "Clear All Filters" button
+- **Loading state** — spinner with "Loading workers..." text
+- **Clickable cards** — each card links to the existing public worker profile page (`/workers/:id`)
+- Cards styled with hover effects (shadow + border highlight) for clear interactivity
+
 ---
 
 ## Setup / Installation
