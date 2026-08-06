@@ -133,6 +133,14 @@ Service providers create verified profiles with skills, experience, service area
 - **Clickable cards** — each card links to the existing public worker profile page (`/workers/:id`)
 - Cards styled with hover effects (shadow + border highlight) for clear interactivity
 
+### Phase 4 ✅ — Pagination & Results UX
+
+- **Pagination controls** — Previous/Next buttons + numbered page buttons with ellipsis for long page ranges
+- **Filter persistence** — active filters and keyword preserved when navigating between pages
+- **Results count** — displays total (e.g. "24 workers found") above the results grid
+- **URL param sync** — page number, keyword, and all filters synced to URL search params for shareable/bookmarkable links
+- **Responsive layout** — cards stack vertically on mobile, 2 columns on tablet, 3 on desktop
+
 ---
 
 ## Setup / Installation
