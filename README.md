@@ -141,6 +141,14 @@ Service providers create verified profiles with skills, experience, service area
 - **URL param sync** — page number, keyword, and all filters synced to URL search params for shareable/bookmarkable links
 - **Responsive layout** — cards stack vertically on mobile, 2 columns on tablet, 3 on desktop
 
+### Phase 5 ✅ — Direct Contact Integration
+
+- **WhatsApp button** — opens `wa.me/<number>` with a pre-filled greeting message including worker name and category
+- **Call Now button** — uses `tel:<number>` link for one-tap calling on mobile
+- **Phone validation** — buttons only shown if the worker has a valid phone number (≥ 7 digits); handles missing/invalid numbers gracefully
+- **Email button** — opens mailto link with pre-filled subject line
+- **Mobile-friendly** — large tap targets (`min-h-12`), full-width on small screens, subtle press animation (`active:scale`)
+
 ---
 
 ## Setup / Installation
