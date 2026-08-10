@@ -7,6 +7,7 @@ import connectDB from './config/db.js'
 import healthRoutes from './routes/healthRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import workerRoutes from './routes/workerRoutes.js'
+import reviewRoutes from './routes/reviewRoutes.js'
 
 // Load environment variables
 dotenv.config()
@@ -34,6 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 app.use('/api', healthRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/workers', workerRoutes)
+app.use('/api/workers', reviewRoutes)
 
 // Root route
 app.get('/', (req, res) => {

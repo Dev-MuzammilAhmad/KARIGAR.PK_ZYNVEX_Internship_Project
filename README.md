@@ -151,6 +151,16 @@ Service providers create verified profiles with skills, experience, service area
 
 ---
 
+## Module 4 — Reviews, Polish & Deployment
+
+### Phase 1 ✅ — Reviews Model & API
+
+- **Review model**: `workerId` (ref WorkerProfile), `customerId` (ref User), `rating` (1–5), `comment` (max 500 chars), timestamps; unique compound index prevents duplicate reviews
+- **POST `/api/workers/:id/reviews`** — protected, customers only; validates rating range, comment length, prevents self-review and duplicate reviews; recalculates `avgRating` on the WorkerProfile via aggregation
+- **GET `/api/workers/:id/reviews`** — public; returns all reviews for a worker with customer names, sorted newest first
+
+---
+
 ## Setup / Installation
 
 ### Prerequisites
