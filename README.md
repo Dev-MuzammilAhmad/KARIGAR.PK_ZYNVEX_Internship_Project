@@ -159,6 +159,14 @@ Service providers create verified profiles with skills, experience, service area
 - **POST `/api/workers/:id/reviews`** — protected, customers only; validates rating range, comment length, prevents self-review and duplicate reviews; recalculates `avgRating` on the WorkerProfile via aggregation
 - **GET `/api/workers/:id/reviews`** — public; returns all reviews for a worker with customer names, sorted newest first
 
+### Phase 2 ✅ — Rating Display & Review Submission (Frontend)
+
+- **StarRating component** — reusable, supports display mode (static) and interactive mode (clickable with hover); configurable sizes (sm/md/lg)
+- **ReviewForm component** — interactive star selector + comment textarea with character counter; shown only to logged-in customers; success/error feedback
+- **ReviewList component** — displays reviews with customer avatar, name, date, star rating, and comment; handles loading and "No reviews yet" states
+- Integrated into the public worker profile page — review form (customers only) alongside reviews list in a responsive grid layout
+- `avgRating` on the profile auto-refreshes after a new review is submitted
+
 ---
 
 ## Setup / Installation

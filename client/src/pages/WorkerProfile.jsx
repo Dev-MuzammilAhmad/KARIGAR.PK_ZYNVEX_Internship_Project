@@ -1,17 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import API from '../utils/api'
+import ReviewForm from '../components/ReviewForm'
+import ReviewList from '../components/ReviewList'
 
 const WorkerProfile = () => {
   const { id } = useParams()
+  const { user, isAuthenticated } = useAuth()
   const [worker, setWorker] = useState(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [reviews, setReviews] = useState([])
+  const [reviewsLoading, setReviewsLoading] = useState(true)
 
   const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'
 
   useEffect(() => {
     fetchWorker()
+    fetchReviews()
   }, [id])
 
   const fetchWorker = async () => {
@@ -28,6 +35,23 @@ const WorkerProfile = () => {
       setLoading(false)
     }
   }
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true)
+    try {
+      const { data } = await API.get(`/workers/${id}/reviews`)
+      setReviews(data.data)
+    } catch {
+      setReviews([])
+    } finally {
+      setReviewsLoading(false)
+    }
+  }
+
+  const handleReviewSubmitted = useCallback(() => {
+    fetchReviews()
+    fetchWorker() // Refresh to get updated avgRating
+  }, [id])
 
   // Loading state
   if (loading) {
@@ -286,6 +310,25 @@ const WorkerProfile = () => {
               </div>
             )
           })()}
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-8">
+        <h2 className="text-lg font-bold text-text-primary mb-5">Reviews</h2>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Review Form — shown only to logged-in customers */}
+          {isAuthenticated && user?.role === 'customer' && (
+            <div className="lg:col-span-1">
+              <ReviewForm workerId={id} onReviewSubmitted={handleReviewSubmitted} />
+            </div>
+          )}
+
+          {/* Reviews List */}
+          <div className={isAuthenticated && user?.role === 'customer' ? 'lg:col-span-2' : 'lg:col-span-3'}>
+            <ReviewList reviews={reviews} loading={reviewsLoading} />
+          </div>
         </div>
       </div>
     </div>
