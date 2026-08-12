@@ -167,6 +167,12 @@ Service providers create verified profiles with skills, experience, service area
 - Integrated into the public worker profile page — review form (customers only) alongside reviews list in a responsive grid layout
 - `avgRating` on the profile auto-refreshes after a new review is submitted
 
+### Phase 3 ✅ — Average Rating Calculation & Sync
+
+- **avgRating recalculation** — on new review creation, `avgRating` is recalculated via MongoDB aggregation and saved on the WorkerProfile document
+- **StarRating component** used across all pages: worker profile hero, worker listing cards, and worker dashboard
+- **Zero-reviews handling** — workers with no reviews show "No reviews yet" text (profile/dashboard) or a "New — No reviews yet" badge (listing cards) instead of 0.0
+
 ---
 
 ## Setup / Installation

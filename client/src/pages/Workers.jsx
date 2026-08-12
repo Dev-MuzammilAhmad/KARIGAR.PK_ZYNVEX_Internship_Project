@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import API from '../utils/api'
 import SearchBar from '../components/SearchBar'
 import FilterPanel from '../components/FilterPanel'
+import StarRating from '../components/StarRating'
 
 const DEFAULT_FILTERS = {
   category: '',
@@ -190,13 +191,19 @@ const Workers = () => {
                         <p className="text-sm text-primary font-medium capitalize mt-0.5">
                           {worker.category.replace('-', ' ')}
                         </p>
-                        <div className="flex items-center gap-1 mt-1">
-                          <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                          </svg>
-                          <span className="text-sm text-text-secondary font-medium">
-                            {worker.avgRating.toFixed(1)}
-                          </span>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          {worker.avgRating > 0 ? (
+                            <>
+                              <StarRating rating={Math.round(worker.avgRating)} size="sm" />
+                              <span className="text-sm text-text-secondary font-medium">
+                                {worker.avgRating.toFixed(1)}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-xs text-text-secondary bg-background px-2 py-0.5 rounded-md">
+                              New — No reviews yet
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
