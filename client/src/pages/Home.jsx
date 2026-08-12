@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 const categories = [
   {
     name: 'Electrician',
+    slug: 'electrician',
     description: 'Wiring, repairs & installations',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -12,6 +13,7 @@ const categories = [
   },
   {
     name: 'Plumber',
+    slug: 'plumber',
     description: 'Pipes, leaks & fixtures',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -21,6 +23,7 @@ const categories = [
   },
   {
     name: 'Carpenter',
+    slug: 'carpenter',
     description: 'Furniture & woodwork',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -30,6 +33,7 @@ const categories = [
   },
   {
     name: 'Painter',
+    slug: 'painter',
     description: 'Interior & exterior painting',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -39,6 +43,7 @@ const categories = [
   },
   {
     name: 'Mechanic',
+    slug: 'mechanic',
     description: 'Auto repair & servicing',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -49,6 +54,7 @@ const categories = [
   },
   {
     name: 'AC Technician',
+    slug: 'ac-technician',
     description: 'AC install, repair & service',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -123,17 +129,17 @@ const Home = () => {
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                to="/signup"
+                to="/workers"
                 className="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-white bg-primary rounded-xl hover:bg-primary-hover shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+              >
+                Find Workers
+              </Link>
+              <Link
+                to="/signup"
+                className="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-primary bg-primary-light/60 border border-primary/20 rounded-xl hover:bg-primary-light hover:border-primary/40 transition-all"
               >
                 Get Started — It&apos;s Free
               </Link>
-              <a
-                href="#how-it-works"
-                className="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-primary bg-primary-light/60 border border-primary/20 rounded-xl hover:bg-primary-light hover:border-primary/40 transition-all"
-              >
-                How It Works
-              </a>
             </div>
 
             {/* Trust indicators */}
@@ -214,9 +220,10 @@ const Home = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-6">
             {categories.map((category) => (
-              <div
+              <Link
                 key={category.name}
-                className="group cursor-pointer bg-background border border-border rounded-2xl p-6 text-center hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
+                to={`/workers?category=${category.slug}`}
+                className="group bg-background border border-border rounded-2xl p-6 text-center hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="inline-flex items-center justify-center w-14 h-14 bg-primary-light rounded-2xl mb-4 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                   {category.icon}
@@ -227,7 +234,7 @@ const Home = () => {
                 <p className="text-xs text-text-secondary hidden sm:block">
                   {category.description}
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -268,28 +275,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-surface border-t border-border py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085" />
-                </svg>
-              </div>
-              <span className="text-lg font-semibold text-text-primary">
-                Karigar<span className="text-primary">.pk</span>
-              </span>
-            </div>
-
-            <p className="text-sm text-text-secondary">
-              &copy; {new Date().getFullYear()} Karigar.pk — Connecting skills with needs.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

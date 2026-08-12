@@ -8,6 +8,7 @@ import WorkerDashboard from './pages/WorkerDashboard'
 import WorkerProfileForm from './pages/WorkerProfileForm'
 import WorkerProfile from './pages/WorkerProfile'
 import Workers from './pages/Workers'
+import Footer from './components/Footer'
 
 // Protected route wrapper — redirects to login if not authenticated
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -40,9 +41,9 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
 const AppRoutes = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <main>
+      <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -79,6 +80,7 @@ const AppRoutes = () => {
           />
         </Routes>
       </main>
+      <Footer />
     </div>
   )
 }

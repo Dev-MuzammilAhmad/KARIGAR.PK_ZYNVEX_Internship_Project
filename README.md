@@ -173,6 +173,15 @@ Service providers create verified profiles with skills, experience, service area
 - **StarRating component** used across all pages: worker profile hero, worker listing cards, and worker dashboard
 - **Zero-reviews handling** — workers with no reviews show "No reviews yet" text (profile/dashboard) or a "New — No reviews yet" badge (listing cards) instead of 0.0
 
+### Phase 4 ✅ — UI Polish & Responsive Pass
+
+- **Reusable `Spinner` component** — consistent loading state across all data-fetching pages (Dashboard, Profile, Workers listing)
+- **Reusable `ErrorState` component** — consistent error display with retry button and "Go Home" link
+- **Global `Footer` component** — added to App layout, appears on all pages with logo, navigation links, and copyright
+- **Home page polish** — hero CTA updated to "Find Workers" (links to `/workers`); category cards now clickable (link to `/workers?category=xxx` for instant filtered search)
+- **Inline footer removed** from Home page (replaced by global Footer)
+- **Layout updated** — `flex-col` with `flex-1` main ensures footer sticks to bottom of viewport on short pages
+
 ---
 
 ## Setup / Installation
