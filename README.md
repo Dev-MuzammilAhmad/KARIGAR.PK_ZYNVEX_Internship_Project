@@ -6,181 +6,160 @@ Service providers create verified profiles with skills, experience, service area
 
 ---
 
+## Features
+
+### For Customers
+- **Search & Filter** — find workers by keyword, category, city, price range, and minimum rating
+- **Worker Listing** — browse results in a responsive card grid with pagination
+- **Worker Profiles** — view detailed profiles with skills, bio, experience, pricing, and reviews
+- **Direct Contact** — reach workers instantly via WhatsApp (pre-filled message) or phone call
+- **Reviews & Ratings** — leave star ratings and comments for workers you've hired
+
+### For Workers
+- **Profile Creation** — build a professional profile with category, skills, experience, pricing, service area, and profile photo
+- **Profile Management** — edit or delete your profile from the worker dashboard
+- **Review Display** — see your average rating and all customer reviews
+
+### Platform
+- **User Authentication** — secure signup/login with JWT tokens and bcrypt password hashing
+- **Role-Based Access** — customers and workers see different features; protected routes enforce authorization
+- **Responsive Design** — mobile-first, works beautifully on all screen sizes
+- **Security** — Helmet security headers, NoSQL injection prevention, rate limiting on auth routes
+
+---
+
 ## Tech Stack
 
 | Layer      | Technology                              |
 |------------|-----------------------------------------|
 | Frontend   | React (Vite), React Router, Axios, Tailwind CSS v4 |
-| Backend    | Node.js, Express.js, CORS                |
-| Database   | MongoDB Atlas with Mongoose               |
+| Backend    | Node.js, Express.js, CORS               |
+| Database   | MongoDB Atlas with Mongoose              |
 | Auth       | JWT (jsonwebtoken) + bcryptjs            |
+| Security   | Helmet, express-mongo-sanitize, express-rate-limit |
 | Deployment | Frontend on Vercel, Backend on Render    |
 
 ---
 
-## Module 1 — Setup, Auth & Core Structure
+## Project Structure
 
-### Phase 1 ✅ — Project Structure & Frontend Skeleton
-
-- Monorepo layout with `/client` (React/Vite) and `/server` (Node/Express placeholder)
-- React initialized with Vite, React Router, and Tailwind CSS v4
-- Warm neutral theme with brown accent (`#8B5E34`) applied globally via Tailwind `@theme`
-- **Navbar** — responsive with mobile hamburger menu, Karigar.pk branding, Login/Sign Up buttons (static)
-- **Home page** — hero section, "How It Works" (3-step cards), popular categories grid (6 services), CTA banner, footer
-
-### Phase 2 ✅ — Backend Setup & Database Connection
-
-- Express.js server with CORS and JSON body parsing
-- MongoDB Atlas connection via Mongoose (environment variable based)
-- Server folder structure: `config/`, `models/`, `routes/`, `controllers/`, `middleware/`
-- Health-check API route: `GET /api/health` — returns server status, uptime, and database connection state
-- Nodemon for auto-reloading during development
-
-### Phase 3 ✅ — Users Model & Auth API
-
-- **User model**: name, email, password (hashed with bcrypt), phone, role (`customer` | `worker`), timestamps
-- **Signup endpoint**: `POST /api/auth/signup` — validates input, checks duplicate email, hashes password, returns JWT
-- **Login endpoint**: `POST /api/auth/login` — validates credentials, returns JWT
-- **Get profile endpoint**: `GET /api/auth/me` — protected route, returns current user data
-- **JWT middleware**: extracts Bearer token, verifies, and attaches user to request
-
-### Phase 4 ✅ — Frontend Auth Integration
-
-- **Login page** (`/login`) — email/password form with client-side validation, error display, loading state
-- **Signup page** (`/signup`) — name, email, password, confirm password, phone (optional), role selector (customer/worker)
-- **AuthContext** — React context providing `user`, `login()`, `signup()`, `logout()`, `isAuthenticated` across the app
-- **Axios instance** — centralized API client with automatic JWT token injection via interceptor
-- **Navbar updated** — shows user's name initial + Logout when logged in; Login/Sign Up when logged out
-- **Form validation** — required fields, valid email, password length (6+), password match — on both frontend and backend
-
-### Phase 5 ✅ — Environment Variables & Deployment
-
-- `.env` files for both client and server with `.env.example` templates
-- All secrets (MongoDB URI, JWT secret) excluded from version control via `.gitignore`
-- **Vercel config** (`vercel.json`) — SPA rewrites for React Router
-- **Render config** (`render.yaml`) — deployment blueprint with env var placeholders
-- Deployment-ready: frontend on Vercel, backend on Render
-
----
-
-## Module 2 — Worker Profiles (CRUD)
-
-### Phase 1 ✅ — WorkerProfile Model & Backend Routes Skeleton
-
-- **WorkerProfile model**: userId (ref User), skills [String], category (enum), experienceYears, serviceArea, city, pricing {min, max}, bio, profileImage, verified (default false), avgRating (default 0), timestamps
-- **Worker controller**: placeholder handlers for Create, Read (all + single + own), Update, Delete — all returning 501
-- **Worker routes**: wired into Express app under `/api/workers` with public GETs and protected POST/PUT/DELETE
-
-### Phase 2 ✅ — Create & Read Worker Profile (API)
-
-- **POST `/api/workers`** — protected, worker-role only; validates all fields, checks for duplicate profile, returns created profile with populated user info
-- **GET `/api/workers`** — public; returns all worker profiles sorted by newest, with user info populated
-- **GET `/api/workers/:id`** — public; returns a single worker profile with graceful handling for invalid/missing IDs
-- **GET `/api/workers/me`** — protected; returns the logged-in worker's own profile
-- Backend validation: required fields, valid pricing range (max ≥ min), non-negative values, category enum check
-
-### Phase 3 ✅ — Update, Delete & Image Upload (API)
-
-- **PUT `/api/workers/:id`** — protected, owner only; partial updates for all profile fields, with image replacement and old file cleanup
-- **DELETE `/api/workers/:id`** — protected, owner only; deletes profile and associated image file from disk
-- **Image upload** via Multer: accepts JPEG/PNG/WebP up to 5MB, stored in `/uploads` with unique filenames
-- Static file serving: uploaded images accessible at `/uploads/filename.ext`
-- Ownership validation on both Update and Delete to prevent unauthorized modifications
-
-### Phase 4 ✅ — Worker Dashboard (Frontend)
-
-- **Worker Dashboard** (`/dashboard`) — shows worker's own profile card with image, details grid, skills tags; Edit and Delete buttons with confirmation modal; create-profile prompt if no profile exists
-- **Create/Edit Profile form** (`/dashboard/create-profile`, `/dashboard/edit-profile`) — unified form with image upload + preview, category dropdown, comma-separated skills, pricing range, bio with char counter, client-side validation
-- **ProtectedRoute component** — role-based access control; redirects to login or home for unauthorized users
-- **Navbar updated** — "Dashboard" link visible for workers on desktop and mobile
-- All forms connected to backend via Axios with `multipart/form-data` for image uploads
-
-### Phase 5 ✅ — Public Worker Profile Page (Frontend)
-
-- **Public profile page** (`/workers/:id`) — no login required; displays profile image with gradient hero, name, category badge, verified status, bio, skills tags
-- **Details cards**: service area, pricing range, and experience in a responsive grid
-- **Contact section**: WhatsApp, phone call, and email buttons using the worker's registered contact info
-- Graceful handling of loading and "profile not found" states with friendly UI
-- Fully responsive on mobile, styled consistently with the warm neutral theme
+```
+Karigar/
+├── client/                    # React frontend (Vite)
+│   ├── src/
+│   │   ├── components/        # Reusable UI components
+│   │   │   ├── ErrorState.jsx
+│   │   │   ├── FilterPanel.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── ReviewForm.jsx
+│   │   │   ├── ReviewList.jsx
+│   │   │   ├── SearchBar.jsx
+│   │   │   ├── Spinner.jsx
+│   │   │   └── StarRating.jsx
+│   │   ├── context/           # React context (AuthContext)
+│   │   ├── pages/             # Page components
+│   │   │   ├── Home.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   ├── WorkerDashboard.jsx
+│   │   │   ├── WorkerProfile.jsx
+│   │   │   ├── WorkerProfileForm.jsx
+│   │   │   └── Workers.jsx
+│   │   ├── utils/             # API config (Axios instance)
+│   │   └── App.jsx            # Routes & layout
+│   └── vercel.json            # Vercel deployment config
+│
+├── server/                    # Express backend
+│   ├── config/                # Database connection
+│   ├── controllers/           # Route handlers
+│   │   ├── authController.js
+│   │   ├── reviewController.js
+│   │   └── workerController.js
+│   ├── middleware/            # Auth middleware (JWT verify)
+│   ├── models/                # Mongoose schemas
+│   │   ├── Review.js
+│   │   ├── User.js
+│   │   └── WorkerProfile.js
+│   ├── routes/                # Express route definitions
+│   ├── uploads/               # Profile image storage
+│   └── server.js              # Entry point
+│
+└── README.md
+```
 
 ---
 
-## Module 3 — Search, Filter & Customer Side
+## API Endpoints
 
-### Phase 1 ✅ — Search & Filter API
+### Authentication
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| `POST` | `/api/auth/signup` | Public | Register a new user (customer or worker) |
+| `POST` | `/api/auth/login` | Public | Login and receive JWT token |
+| `GET` | `/api/auth/me` | 🔒 | Get current user profile |
 
-- Extended `GET /api/workers` with query parameters: `category`, `city`, `keyword`, `minRating`, `minPrice`, `maxPrice`
-- **Keyword search**: matches against skills, category, service area, and bio using case-insensitive regex
-- **Category filter**: exact match from enum; **City filter**: case-insensitive partial match
-- **Price range**: filters by `pricing.min` ≥ minPrice and `pricing.max` ≤ maxPrice
-- **Pagination**: `page` and `limit` query params (default 12 per page, max 50); response includes `total`, `page`, `totalPages`
+### Worker Profiles
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| `GET` | `/api/workers` | Public | List/search workers with filters & pagination |
+| `GET` | `/api/workers/:id` | Public | Get a single worker profile |
+| `GET` | `/api/workers/me` | 🔒 Worker | Get logged-in worker's own profile |
+| `POST` | `/api/workers` | 🔒 Worker | Create a worker profile (with image upload) |
+| `PUT` | `/api/workers/:id` | 🔒 Owner | Update a worker profile |
+| `DELETE` | `/api/workers/:id` | 🔒 Owner | Delete a worker profile |
 
-### Phase 2 ✅ — Search & Filter UI + Worker Listing (Frontend)
+### Reviews
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| `GET` | `/api/workers/:id/reviews` | Public | Get all reviews for a worker |
+| `POST` | `/api/workers/:id/reviews` | 🔒 Customer | Submit a review (1 per customer per worker) |
 
-- **SearchBar component** — keyword search with clear button, triggers API search
-- **FilterPanel component** — category dropdown, city input, price range (min/max), minimum rating selector; collapsible on mobile with "Reset All" option
-- **Workers listing page** (`/workers`) — responsive card grid showing profile image, name, category, location, pricing, rating, and skills; clickable cards link to public profile
-- **Pagination controls** — Previous/Next + numbered page buttons with ellipsis; filters preserved across pages
-- **Results count** display and empty/loading states with "Clear All Filters" option
-- **URL sync** — active filters and page number synced to URL search params
-- **Navbar updated** — "Find Workers" link added for desktop and mobile
-
-### Phase 3 ✅ — Worker Listing / Results Page
-
-- **Worker cards** — responsive grid (1/2/3 columns) showing profile image, name, category, city/service area, price range, average rating, and top 3 skills with overflow count
-- **Empty state** — friendly "No workers found" message with a "Clear All Filters" button
-- **Loading state** — spinner with "Loading workers..." text
-- **Clickable cards** — each card links to the existing public worker profile page (`/workers/:id`)
-- Cards styled with hover effects (shadow + border highlight) for clear interactivity
-
-### Phase 4 ✅ — Pagination & Results UX
-
-- **Pagination controls** — Previous/Next buttons + numbered page buttons with ellipsis for long page ranges
-- **Filter persistence** — active filters and keyword preserved when navigating between pages
-- **Results count** — displays total (e.g. "24 workers found") above the results grid
-- **URL param sync** — page number, keyword, and all filters synced to URL search params for shareable/bookmarkable links
-- **Responsive layout** — cards stack vertically on mobile, 2 columns on tablet, 3 on desktop
-
-### Phase 5 ✅ — Direct Contact Integration
-
-- **WhatsApp button** — opens `wa.me/<number>` with a pre-filled greeting message including worker name and category
-- **Call Now button** — uses `tel:<number>` link for one-tap calling on mobile
-- **Phone validation** — buttons only shown if the worker has a valid phone number (≥ 7 digits); handles missing/invalid numbers gracefully
-- **Email button** — opens mailto link with pre-filled subject line
-- **Mobile-friendly** — large tap targets (`min-h-12`), full-width on small screens, subtle press animation (`active:scale`)
+### Search Query Parameters
+| Param | Type | Description |
+|-------|------|-------------|
+| `category` | string | Filter by category (e.g. `electrician`) |
+| `city` | string | Case-insensitive city search |
+| `keyword` | string | Search skills, category, service area, bio |
+| `minRating` | number | Minimum average rating (1-5) |
+| `minPrice` | number | Minimum price range |
+| `maxPrice` | number | Maximum price range |
+| `page` | number | Page number (default: 1) |
+| `limit` | number | Results per page (default: 12, max: 50) |
 
 ---
 
-## Module 4 — Reviews, Polish & Deployment
+## Development Log
 
-### Phase 1 ✅ — Reviews Model & API
+### Module 1 — Setup, Auth & Core Structure
 
-- **Review model**: `workerId` (ref WorkerProfile), `customerId` (ref User), `rating` (1–5), `comment` (max 500 chars), timestamps; unique compound index prevents duplicate reviews
-- **POST `/api/workers/:id/reviews`** — protected, customers only; validates rating range, comment length, prevents self-review and duplicate reviews; recalculates `avgRating` on the WorkerProfile via aggregation
-- **GET `/api/workers/:id/reviews`** — public; returns all reviews for a worker with customer names, sorted newest first
+- Project initialized with React (Vite) + Tailwind CSS frontend and Node/Express backend
+- MongoDB Atlas connected via Mongoose; Users model with bcrypt password hashing
+- JWT-based authentication: signup, login, and `/me` endpoint
+- Protected route wrapper component; warm neutral theme (cream + brown #8B5E34)
 
-### Phase 2 ✅ — Rating Display & Review Submission (Frontend)
+### Module 2 — Worker Profiles CRUD
 
-- **StarRating component** — reusable, supports display mode (static) and interactive mode (clickable with hover); configurable sizes (sm/md/lg)
-- **ReviewForm component** — interactive star selector + comment textarea with character counter; shown only to logged-in customers; success/error feedback
-- **ReviewList component** — displays reviews with customer avatar, name, date, star rating, and comment; handles loading and "No reviews yet" states
-- Integrated into the public worker profile page — review form (customers only) alongside reviews list in a responsive grid layout
-- `avgRating` on the profile auto-refreshes after a new review is submitted
+- WorkerProfile Mongoose model with skills, category, experience, pricing, service area, and profile image
+- Full CRUD API: create, read, update, delete with ownership authorization
+- Profile image upload via Multer with static file serving
+- Worker dashboard, profile creation/edit form, and public worker profile page
 
-### Phase 3 ✅ — Average Rating Calculation & Sync
+### Module 3 — Search, Filter & Customer Side
 
-- **avgRating recalculation** — on new review creation, `avgRating` is recalculated via MongoDB aggregation and saved on the WorkerProfile document
-- **StarRating component** used across all pages: worker profile hero, worker listing cards, and worker dashboard
-- **Zero-reviews handling** — workers with no reviews show "No reviews yet" text (profile/dashboard) or a "New — No reviews yet" badge (listing cards) instead of 0.0
+- Extended `GET /api/workers` with query parameters for category, city, keyword, rating, and price filtering
+- Pagination with `page` and `limit` support
+- SearchBar, FilterPanel, and Workers listing page with responsive card grid
+- URL search params synced for shareable/bookmarkable filtered results
+- WhatsApp and Call buttons with pre-filled messages, phone validation, and mobile-friendly tap targets
 
-### Phase 4 ✅ — UI Polish & Responsive Pass
+### Module 4 — Reviews, Polish & Deployment
 
-- **Reusable `Spinner` component** — consistent loading state across all data-fetching pages (Dashboard, Profile, Workers listing)
-- **Reusable `ErrorState` component** — consistent error display with retry button and "Go Home" link
-- **Global `Footer` component** — added to App layout, appears on all pages with logo, navigation links, and copyright
-- **Home page polish** — hero CTA updated to "Find Workers" (links to `/workers`); category cards now clickable (link to `/workers?category=xxx` for instant filtered search)
-- **Inline footer removed** from Home page (replaced by global Footer)
-- **Layout updated** — `flex-col` with `flex-1` main ensures footer sticks to bottom of viewport on short pages
+- **Reviews Model & API** — Review schema with rating (1-5) and comment; unique compound index prevents duplicates; avgRating auto-recalculated via MongoDB aggregation
+- **Rating Display & Review Submission** — StarRating component (display + interactive modes); ReviewForm for logged-in customers; ReviewList with avatars, dates, and ratings
+- **Average Rating Sync** — StarRating used across all pages; zero-reviews gracefully handled with "No reviews yet" fallback
+- **UI Polish** — Reusable Spinner, ErrorState, and Footer components; global footer in App layout; clickable category cards on Home page linking to filtered search
+- **Security Pass** — Helmet HTTP headers, express-mongo-sanitize (NoSQL injection prevention), rate limiting on auth routes (100 req/15min), JSON body size limit (10kb), input trimming and lowercasing on auth
 
 ---
 
@@ -189,11 +168,11 @@ Service providers create verified profiles with skills, experience, service area
 ### Prerequisites
 - Node.js (v18+)
 - npm
+- MongoDB Atlas account (or local MongoDB)
 
 ### Run Frontend Locally
 
 ```bash
-# From the project root
 cd client
 npm install
 npm run dev
@@ -204,11 +183,10 @@ The app will be available at `http://localhost:5173/`.
 ### Run Backend Locally
 
 ```bash
-# From the project root
 cd server
 npm install
 
-# Copy .env.example to .env and fill in your MongoDB Atlas URI
+# Copy .env.example to .env and fill in your values
 cp .env.example .env
 
 npm run dev
@@ -232,7 +210,7 @@ Health check: `http://localhost:5000/api/health`
 ### Client (`/client/.env`)
 | Variable       | Description                     |
 |---------------|---------------------------------|
-| `VITE_API_URL` | Backend API base URL            |
+| `VITE_API_URL` | Backend API base URL (e.g. `https://your-backend.onrender.com/api`) |
 
 ---
 
@@ -259,3 +237,24 @@ Health check: `http://localhost:5000/api/health`
    - `JWT_SECRET` = your secret key
    - `CLIENT_URL` = your Vercel frontend URL
 7. Deploy
+
+---
+
+## Security Measures
+
+| Measure | Package/Method | Purpose |
+|---------|---------------|---------|
+| HTTP Headers | `helmet` | Sets secure HTTP headers (XSS, CSP, etc.) |
+| NoSQL Injection | `express-mongo-sanitize` | Strips `$` and `.` from user input |
+| Rate Limiting | `express-rate-limit` | 100 req/15min on auth routes |
+| Body Size Limit | `express.json({ limit: '10kb' })` | Prevents large payload attacks |
+| Password Hashing | `bcryptjs` | Salted hashing with 12 rounds |
+| JWT Auth | `jsonwebtoken` | Stateless token-based authentication |
+| Ownership Checks | Custom middleware | Only profile owners can update/delete |
+| Input Sanitization | `trim()` + `toLowerCase()` | Clean email/name before DB operations |
+
+---
+
+## License
+
+This project was built as part of the ZYNVEX Internship program.

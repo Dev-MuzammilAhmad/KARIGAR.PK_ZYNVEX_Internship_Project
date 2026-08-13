@@ -15,8 +15,12 @@ export const signup = async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body
 
+    // Sanitize inputs
+    const cleanEmail = email?.trim().toLowerCase()
+    const cleanName = name?.trim()
+
     // Validation
-    if (!name || !email || !password) {
+    if (!cleanName || !cleanEmail || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide name, email, and password',
@@ -31,7 +35,7 @@ export const signup = async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email })
+    const existingUser = await User.findOne({ email: cleanEmail })
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -41,10 +45,10 @@ export const signup = async (req, res) => {
 
     // Create user
     const user = await User.create({
-      name,
-      email,
+      name: cleanName,
+      email: cleanEmail,
       password,
-      phone: phone || '',
+      phone: phone?.trim() || '',
       role: role || 'customer',
     })
 
@@ -85,9 +89,10 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body
+    const cleanEmail = email?.trim().toLowerCase()
 
     // Validation
-    if (!email || !password) {
+    if (!cleanEmail || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide email and password',
@@ -95,7 +100,7 @@ export const login = async (req, res) => {
     }
 
     // Find user and include password field
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({ email: cleanEmail }).select('+password')
     if (!user) {
       return res.status(401).json({
         success: false,
