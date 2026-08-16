@@ -23,18 +23,50 @@ export const createWorkerProfile = async (req, res) => {
     }
 
     const {
-      skills,
       category,
       experienceYears,
       serviceArea,
       city,
-      pricing,
       bio,
       profileImage,
     } = req.body
 
+    // Parse skills (handles array, comma-separated string, JSON string, or single string from FormData)
+    let parsedSkills = req.body.skills
+    if (typeof parsedSkills === 'string') {
+      try {
+        const json = JSON.parse(parsedSkills)
+        parsedSkills = Array.isArray(json) ? json : [json]
+      } catch {
+        parsedSkills = parsedSkills.split(',').map((s) => s.trim()).filter(Boolean)
+      }
+    }
+    if (!Array.isArray(parsedSkills)) {
+      parsedSkills = parsedSkills ? [parsedSkills] : []
+    }
+    parsedSkills = parsedSkills.map((s) => String(s).trim()).filter(Boolean)
+
+    // Parse pricing (handles nested object, JSON string, or FormData 'pricing[min]' / 'pricing[max]')
+    let parsedPricing = req.body.pricing
+    if (typeof parsedPricing === 'string') {
+      try {
+        parsedPricing = JSON.parse(parsedPricing)
+      } catch {}
+    }
+    if (!parsedPricing && (req.body['pricing[min]'] !== undefined || req.body['pricing[max]'] !== undefined)) {
+      parsedPricing = {
+        min: Number(req.body['pricing[min]']),
+        max: Number(req.body['pricing[max]']),
+      }
+    } else if (parsedPricing) {
+      parsedPricing = {
+        min: Number(parsedPricing.min),
+        max: Number(parsedPricing.max),
+      }
+    }
+
     // Validation
-    if (!skills || !Array.isArray(skills) || skills.length === 0) {
+    if (!parsedSkills || parsedSkills.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'At least one skill is required',
@@ -48,7 +80,7 @@ export const createWorkerProfile = async (req, res) => {
       })
     }
 
-    if (experienceYears === undefined || experienceYears === null) {
+    if (experienceYears === undefined || experienceYears === null || experienceYears === '') {
       return res.status(400).json({
         success: false,
         message: 'Experience in years is required',
@@ -62,21 +94,21 @@ export const createWorkerProfile = async (req, res) => {
       })
     }
 
-    if (!pricing || pricing.min === undefined || pricing.max === undefined) {
+    if (!parsedPricing || isNaN(parsedPricing.min) || isNaN(parsedPricing.max)) {
       return res.status(400).json({
         success: false,
         message: 'Pricing range (min and max) is required',
       })
     }
 
-    if (pricing.min < 0 || pricing.max < 0) {
+    if (parsedPricing.min < 0 || parsedPricing.max < 0) {
       return res.status(400).json({
         success: false,
         message: 'Pricing values cannot be negative',
       })
     }
 
-    if (pricing.max < pricing.min) {
+    if (parsedPricing.max < parsedPricing.min) {
       return res.status(400).json({
         success: false,
         message: 'Maximum price must be greater than or equal to minimum price',
@@ -86,13 +118,13 @@ export const createWorkerProfile = async (req, res) => {
     // Create the profile
     const workerProfile = await WorkerProfile.create({
       userId: req.user._id,
-      skills,
+      skills: parsedSkills,
       category,
-      experienceYears,
-      serviceArea,
-      city,
-      pricing,
-      bio: bio || '',
+      experienceYears: Number(experienceYears),
+      serviceArea: serviceArea.trim(),
+      city: city.trim(),
+      pricing: parsedPricing,
+      bio: bio ? bio.trim() : '',
       profileImage: req.file ? `/uploads/${req.file.filename}` : (profileImage || ''),
     })
 
@@ -290,23 +322,35 @@ export const updateWorkerProfile = async (req, res) => {
       })
     }
 
-    // Fields that can be updated
-    const allowedUpdates = [
-      'skills',
-      'category',
-      'experienceYears',
-      'serviceArea',
-      'city',
-      'pricing',
-      'bio',
-    ]
-
-    // Apply updates from request body
-    allowedUpdates.forEach((field) => {
-      if (req.body[field] !== undefined) {
-        worker[field] = req.body[field]
+    // Handle skills update
+    if (req.body.skills !== undefined) {
+      let parsedSkills = req.body.skills
+      if (typeof parsedSkills === 'string') {
+        try {
+          const json = JSON.parse(parsedSkills)
+          parsedSkills = Array.isArray(json) ? json : [json]
+        } catch {
+          parsedSkills = parsedSkills.split(',').map((s) => s.trim()).filter(Boolean)
+        }
       }
-    })
+      if (!Array.isArray(parsedSkills)) {
+        parsedSkills = parsedSkills ? [parsedSkills] : []
+      }
+      parsedSkills = parsedSkills.map((s) => String(s).trim()).filter(Boolean)
+      if (parsedSkills.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'At least one skill is required',
+        })
+      }
+      worker.skills = parsedSkills
+    }
+
+    if (req.body.category !== undefined) worker.category = req.body.category
+    if (req.body.experienceYears !== undefined) worker.experienceYears = Number(req.body.experienceYears)
+    if (req.body.serviceArea !== undefined) worker.serviceArea = req.body.serviceArea.trim()
+    if (req.body.city !== undefined) worker.city = req.body.city.trim()
+    if (req.body.bio !== undefined) worker.bio = req.body.bio ? req.body.bio.trim() : ''
 
     // Handle profile image upload via Multer
     if (req.file) {
@@ -325,15 +369,45 @@ export const updateWorkerProfile = async (req, res) => {
       worker.profileImage = `/uploads/${req.file.filename}`
     }
 
-    // Validate pricing if being updated
-    if (req.body.pricing) {
-      const { min, max } = req.body.pricing
-      if (min !== undefined && max !== undefined && max < min) {
+    // Handle pricing update
+    let parsedPricing = req.body.pricing
+    if (typeof parsedPricing === 'string') {
+      try {
+        parsedPricing = JSON.parse(parsedPricing)
+      } catch {}
+    }
+    if (!parsedPricing && (req.body['pricing[min]'] !== undefined || req.body['pricing[max]'] !== undefined)) {
+      parsedPricing = {
+        min: Number(req.body['pricing[min]']),
+        max: Number(req.body['pricing[max]']),
+      }
+    } else if (parsedPricing) {
+      parsedPricing = {
+        min: Number(parsedPricing.min),
+        max: Number(parsedPricing.max),
+      }
+    }
+
+    if (parsedPricing) {
+      if (isNaN(parsedPricing.min) || isNaN(parsedPricing.max)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Pricing range (min and max) is required',
+        })
+      }
+      if (parsedPricing.min < 0 || parsedPricing.max < 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Pricing values cannot be negative',
+        })
+      }
+      if (parsedPricing.max < parsedPricing.min) {
         return res.status(400).json({
           success: false,
           message: 'Maximum price must be greater than or equal to minimum price',
         })
       }
+      worker.pricing = parsedPricing
     }
 
     const updatedWorker = await worker.save()

@@ -87,11 +87,10 @@ const workerProfileSchema = new mongoose.Schema(
 )
 
 // Validate that pricing.max >= pricing.min
-workerProfileSchema.pre('validate', function (next) {
+workerProfileSchema.pre('validate', function () {
   if (this.pricing && this.pricing.max < this.pricing.min) {
     this.invalidate('pricing.max', 'Maximum price must be greater than or equal to minimum price')
   }
-  next()
 })
 
 const WorkerProfile = mongoose.model('WorkerProfile', workerProfileSchema)

@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import helmet from 'helmet'
-import mongoSanitize from 'express-mongo-sanitize'
 import rateLimit from 'express-rate-limit'
 import connectDB from './config/db.js'
 import healthRoutes from './routes/healthRoutes.js'
@@ -21,16 +20,8 @@ connectDB()
 const app = express()
 const PORT = process.env.PORT || 5000
 
-// Security middleware
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } })) // HTTP security headers (cross-origin policy for image serving)
-app.use(mongoSanitize()) // Sanitize user input — prevent NoSQL injection
-
-// Rate limiter for auth routes (prevent brute-force)
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Max 100 requests per window
-  message: { success: false, message: 'Too many requests. Please try again later.' },
-})
+// HTTP security headers (cross-origin policy for static image serving)
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
 
 // Core middleware
 app.use(cors({
@@ -39,6 +30,32 @@ app.use(cors({
 }))
 app.use(express.json({ limit: '10kb' })) // Limit body size
 app.use(express.urlencoded({ extended: true }))
+
+// NoSQL injection sanitizer compatible with Express 5
+const sanitizeObject = (obj) => {
+  if (!obj || typeof obj !== 'object') return
+  for (const key of Object.keys(obj)) {
+    if (key.startsWith('$') || key.includes('.')) {
+      delete obj[key]
+    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+      sanitizeObject(obj[key])
+    }
+  }
+}
+
+app.use((req, res, next) => {
+  if (req.body) sanitizeObject(req.body)
+  if (req.params) sanitizeObject(req.params)
+  if (req.query) sanitizeObject(req.query)
+  next()
+})
+
+// Rate limiter for auth routes (prevent brute-force)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Max 100 requests per window
+  message: { success: false, message: 'Too many requests. Please try again later.' },
+})
 
 // Serve uploaded files statically
 const __filename = fileURLToPath(import.meta.url)
@@ -56,6 +73,15 @@ app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to Karigar.pk API',
     docs: '/api/health — Check server & database status',
+  })
+})
+
+// Global JSON error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled server error:', err)
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Server error. Please try again later.',
   })
 })
 

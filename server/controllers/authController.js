@@ -67,6 +67,7 @@ export const signup = async (req, res) => {
       },
     })
   } catch (error) {
+    console.error('Signup error:', error)
     // Handle Mongoose validation errors
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map((err) => err.message)
